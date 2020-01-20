@@ -1,0 +1,12 @@
+# dependencies
+node_modules
+
+# production
+build
+
+# dev
+dist
+
+# misc
+.cache
+package-lock.json

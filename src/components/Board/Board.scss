@@ -1,0 +1,45 @@
+$title-size: 25px;
+
+body {
+  background: #eee;
+}
+
+#board-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  background: #d8d2d2;
+  border-radius: 1px;
+  padding: 1px;
+
+  // box-shadow:
+  //   0px 3px 3px -2px rgba(0,0,0,0.2),
+  //   0px 3px 4px 0px rgba(0,0,0,0.14),
+  //   0px 1px 8px 0px rgba(0,0,0,0.12);
+}
+
+.row {
+  height: $title-size + 2px;
+}
+
+.tile {
+  display: inline-block;
+
+  background-color: #fff;
+  width: $title-size;
+  height: $title-size;
+  margin: 1px;
+  border-radius: 2.5px;
+
+  &:not(.wall) {
+    &:hover {
+      background: #f7f7f7;
+    }
+  }
+}
+
+.wall {
+  background: #86d0a9;
+}
