@@ -1,0 +1,9 @@
+export default {
+  ROWS: 10,
+  COLUMNS: 10,
+
+  EMPTY: 'EMPTY',
+  WALL: 'WALL',
+  INITIAL_POINT: 'INITIAL_POINT',
+  WAY_POINT: 'WAY_POINT'
+};

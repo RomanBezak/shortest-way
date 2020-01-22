@@ -1,52 +1,90 @@
 import React from 'react';
-import { Graph, alg } from '@dagrejs/graphlib';
 import classNames from 'classnames';
-
+import constants from '../../config/constatnts';
+import MapManager from '../../helpers/MapManager';
 import './Board.scss';
 
-const ROWS = 3;
-const COLUMNS = 3;
+const {
+  WALL,
+  EMPTY,
+  INITIAL_POINT,
+  WAY_POINT,
+  ROWS,
+  COLUMNS
+} = constants;
 
 export default class Board extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
+    this.initialState = {
       rows: ROWS,
       columns: COLUMNS,
+      initialPoints: 2,
       tilesMap: this.createMapModel()
     };
 
-    var g = new Graph({ directed: true });
-    g.setNode('1', 'first');
+    this.state = this.initialState;
+    this.mapManager = new MapManager();
 
 
-    g.setEdge('1','2');
-    g.setEdge('1','4');
-    g.setEdge('3','4');
-    g.setEdge('2','5');
-    g.setEdge('1','5');
-    g.setEdge('4','2');
-    g.setEdge('5','1');
-    // directed.edge("a", "b"); // returns "my-label"
-    // directed.edge("b", "a"); // returns undefined
-    // alg.dijkstraAll(g)
-    console.log(alg.dijkstraAll(g));
-    
+    window.calc = this.calculateShortestWay.bind(this);
   }
 
-  createMapModel(rows = ROWS, columns = COLUMNS, defaultValue = 1) {
+  createMapModel(rows = ROWS, columns = COLUMNS, defaultValue = EMPTY) {
     return Array(rows)
       .fill()
       .map(() => Array(columns).fill(defaultValue));
   }
 
+  calculateShortestWay() {
+    this.mapManager.initGraph(this.state.tilesMap);
+    
+    const shortestWay = this.mapManager.getShortestWayBetweenTwoInitialPoints();
+
+    let tilesMap = this.state.tilesMap;
+
+    if (shortestWay) {
+      shortestWay.forEach(point => {
+        let [row, col] = MapManager.getTileRowAndColumbByNodeId(point);
+
+        tilesMap[row][col] = WAY_POINT;
+      });
+
+      this.setState({ tilesMap });
+    }
+  }
+
   handlerTileClick(rowId, columnId) {
     const tilesMap = this.state.tilesMap;
+    const tile = tilesMap[rowId][columnId];
 
-    tilesMap[rowId][columnId] = tilesMap[rowId][columnId] ? 0 : 1;
+    if (this.state.initialPoints && tile !== INITIAL_POINT) {
+      tilesMap[rowId][columnId] = INITIAL_POINT;
 
-    this.setState({ tilesMap });
+      this.setState({ initialPoints: this.state.initialPoints - 1 });
+    } else {
+      switch (tile) {
+        case EMPTY:
+          tilesMap[rowId][columnId] = WALL;
+          break;
+        case WALL:
+          tilesMap[rowId][columnId] = EMPTY;
+          break;
+        case INITIAL_POINT:
+          tilesMap[rowId][columnId] = EMPTY;
+          this.setState({ initialPoints: this.state.initialPoints + 1 });
+          break;
+        default:
+          break;
+      }
+
+      this.setState({ tilesMap });
+    }
+  }
+
+  clearBoard() {
+    this.setState({ ...this.initialState, tilesMap: this.createMapModel() });
   }
 
   render() {
@@ -84,17 +122,25 @@ class Tile extends React.Component {
   }
 
   render() {
+    const { value, onClick } = this.props;
+
     const classList = classNames({
       'tile': true,
-      'wall': !this.props.value
+      'wall': value === WALL
     });
+
+    const isInitialPoint = value === INITIAL_POINT;
+    const isWayPoint = value === WAY_POINT;
 
     return (
       <div
         className={classList}
-        onClick={this.props.onClick}
-        title={this.props.value}
-      />
+        onClick={onClick}
+        title={value}
+      >
+        { isInitialPoint && <div className="initialPoint" /> }
+        { isWayPoint && <div className="wayPoint" /> }
+      </div>
     );
   }
 }
