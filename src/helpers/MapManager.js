@@ -3,18 +3,10 @@ import constants from '../config/constatnts';
 
 const {
   WALL,
-  EMPTY,
-  INITIAL_POINT,
-  WAY_POINT,
-  ROWS,
-  COLUMNS
+  INITIAL_POINT
 } = constants;
 
 export default class MapManager {
-  constructor() {
-    window.getWay = this.getShortestWayBetweenTwoInitialPoints.bind(this);
-  }
-
   getShortestWayBetweenTwoInitialPoints() {
     const [startPoint, endPoint] = this.initialPoints;
     const dijkstraResponse = alg.dijkstra(this.tileMapGraph, startPoint);
@@ -31,7 +23,7 @@ export default class MapManager {
           [...path, response[to].predecessor]
         );
       } else return path.filter(i => this.initialPoints.includes(i) === false);
-    } return null; // Path not found
+    } return null;
   }
 
   initGraph(tilesMap) {

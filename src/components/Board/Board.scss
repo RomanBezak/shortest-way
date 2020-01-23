@@ -1,4 +1,6 @@
 $title-size: 25px;
+$initial-point-size: 14px;
+$way-point-size: 4px;
 
 body {
   background: #eee;
@@ -42,8 +44,8 @@ body {
 
 .initialPoint {
   position: absolute;
-  width: 14px;
-  height: 14px;
+  width: $initial-point-size;
+  height: $initial-point-size;
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);
@@ -54,12 +56,19 @@ body {
 
 .wayPoint {
   position: absolute;
-  width: 6px;
-  height: 6px;
+  width: $way-point-size;
+  height: $way-point-size;
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);
 
   border-radius: 50%;
   background-color: #000;
+}
+
+#controls {
+  button {
+    font-size: 15px;
+    margin: 8px;
+  }
 }

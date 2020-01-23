@@ -27,8 +27,9 @@ export default class Board extends React.Component {
     this.state = this.initialState;
     this.mapManager = new MapManager();
 
-
-    window.calc = this.calculateShortestWay.bind(this);
+    this.clearBoard = this.clearBoard.bind(this);
+    this.handleCalculateClick = this.handleCalculateClick.bind(this);
+    this.handleResetClick = this.handleResetClick.bind(this);
   }
 
   createMapModel(rows = ROWS, columns = COLUMNS, defaultValue = EMPTY) {
@@ -52,10 +53,24 @@ export default class Board extends React.Component {
       });
 
       this.setState({ tilesMap });
+    } else {
+      alert('Path not found');
     }
   }
 
-  handlerTileClick(rowId, columnId) {
+  handleResetClick() {
+    console.log('reset');
+  }
+
+  handleCalculateClick() {
+    if (this.state.initialPoints) {
+      alert('Starting points not set');
+    } else {
+      this.calculateShortestWay();
+    }
+  }
+
+  handleTileClick(rowId, columnId) {
     const tilesMap = this.state.tilesMap;
     const tile = tilesMap[rowId][columnId];
 
@@ -84,28 +99,50 @@ export default class Board extends React.Component {
   }
 
   clearBoard() {
-    this.setState({ ...this.initialState, tilesMap: this.createMapModel() });
+    this.setState({
+      ...this.initialState,
+      tilesMap: this.createMapModel(this.initialState.rows, this.initialState.columns)
+    });
   }
 
   render() {
     return (
-      <div id="board-container">
-        {
-          this.state.tilesMap.map((row, rowId) => (
-            <Row key={`row-${rowId}`}>
-              {
-                row.map((value, columnId) => (
-                  <Tile
-                    key={`column-${rowId}${columnId}`}
-                    value={value}
-                    onClick={() => this.handlerTileClick(rowId, columnId)}
-                  />
-                ))
-              }
-            </Row>
-          ))
-        }
+      <div id="board">
+        <div id="board-container">
+          {
+            this.state.tilesMap.map((row, rowId) => (
+              <Row key={`row-${rowId}`}>
+                {
+                  row.map((value, columnId) => (
+                    <Tile
+                      key={`column-${rowId}${columnId}`}
+                      value={value}
+                      onClick={() => this.handleTileClick(rowId, columnId)}
+                    />
+                  ))
+                }
+              </Row>
+            ))
+          }
+        </div>
+        <div id="controls">
+          <button onClick={this.handleCalculateClick}>Calculate shortest way</button>
+          <button onClick={this.clearBoard}>Clear board</button>
+
+          <div className="map-size-controls-container">
+          <label>
+            Rows:
+            <input type="number" onChange={e => this.initialState.rows = Number(e.target.value)} />
+          </label>
+          <label>
+            Columns:
+            <input type="number" onChange={e => this.initialState.columns = Number(e.target.value)}/>
+          </label>
+            <button onClick={this.clearBoard}>Reset</button>
+          </div>
+        </div>
       </div>
+
     );
   }
 }
